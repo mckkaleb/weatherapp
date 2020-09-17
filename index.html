@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="milligram.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js" defer></script>
+    <title>Weather App</title>
+</head>
+<body>
+    <div id="loader"></div>
+    
+    <header id="header">
+        <div class="row">
+            <div class="column">
+                <h4>Weather App</h4>
+            </div>
+            <div class="column" style="text-align: center;">
+                <button class="button button-outline" style="color: white;" onclick="apiCall()">Refresh</button>
+            </div>
+            <div class="column" x-data="{tab: 'f'}">
+                <div class="units-buttons">
+                    <button class="button" :class="{'button-outline': tab != 'f'}" style="color: white;" @click="tab = 'f'" onclick="setUnits('imperial')">F</button>
+                    <button class="button" :class="{'button-outline': tab != 'c'}" style="color: white;" @click="tab = 'c'" onclick="setUnits('metric')">C</button>
+                    <button class="button" :class="{'button-outline': tab != 'k'}" style="color: white;" @click="tab = 'k'" onclick="setUnits('')">K</button>
+                </div>      
+            </div>
+        </div>
+    </header>
+    <main id="main">
+        <div class="bg-cover"></div>
+        <div class="row">
+            <div class="column">
+                <h3 id="location"></h3>
+                <h1><strong id="current-temp"></strong></h1>
+                <p style="margin-top: -30px;">Feels Like <span id="feels-like"></span></p>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Condition</td>
+                            <td id="condition"></td>
+                        </tr>
+                        <tr>
+                            <td>Humidity</td>
+                            <td id="humidity"></td>
+                        </tr>
+                        <tr>
+                            <td>Cloudliness</td>
+                            <td id="cloudliness"></td>
+                        </tr>
+                        <tr>
+                            <td>UV Index</td>
+                            <td id="uv-index"></td>
+                        </tr>
+                        <tr>
+                            <td>Wind</td>
+                            <td id="wind"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="column" style="margin-left: 20px;" x-data="{tab: 'hourly'}">
+                <div class="row">
+                    <div class="column">
+                        <h3>Forecast</h3>
+                    </div>
+                    <div class="column">
+                        <button class="button" :class="{'button-outline': tab != 'hourly'}" @click="tab = 'hourly'" style="color: white;">Hourly</button>
+                        <button class="button" :class="{'button-outline': tab != 'daily'}" @click="tab = 'daily'" style="color: white;">Daily</button>
+                        <button class="button" :class="{'button-outline': tab != 'data'}" @click="tab = 'data'" style="color: white;">Data</button>
+                    </div>
+                </div>
+                <section class="forecast">
+                    <div id="hourly" x-show="tab == 'hourly'">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Condition</th>
+                                    <th>Precipitation</th>
+                                    <th>Temperature</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hourly-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="daily" x-show="tab == 'daily'">
+                        <table style="height: 300px; overflow: auto;">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Condition</th>
+                                    <th>Precipitation</th>
+                                    <th>Temperature H/L</th>
+                                </tr>
+                            </thead>
+                            <tbody id="daily-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="data" x-show="tab == 'data'">
+                        <h2 id="rain-today">0.5</h2>
+                        <p>Precipitation Today</p>
+                        <hr>
+                        <h2 id="dewpoint">37°</h2>
+                        <p>Dewpoint</p>
+                        <hr>
+                        <h2 id="sunrise">7:37 AM</h2>
+                        <p>Sunrise</p>
+                        <h2 id="sunset">7:46 PM</h2>
+                        <p>Sunset</p>
+                    </div>
+                </section>
+                <p>weather data from <a href="https://openweathermap.org" style="color: white;">OpenWeather</a></p>
+            </div>
+        </div>
+        <img src="images/sunny.jpg" style="width: 100%; height: 100%; z-index: -2; position:fixed; top: 0; left: 0;" id="background-image" alt="">
+    </main>
+    <script src="index.js"></script>
+</body>
+</html>
+<style>
+    html {
+        width: 100%;
+    }
+
+    html::-webkit-scrollbar {
+        display: none;
+    }
+
+    .units-buttons {
+        float: right;
+        margin-right: 20px;
+    }
+
+    h4 {
+        margin-left: 20px;
+    }
+
+    main {
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .spacer {
+        height: 20px;
+    }
+
+    h1 {
+        font-size: 13em;
+    }
+
+    * {
+        color: white;
+    }
+
+    .bg-cover {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+        cursor: pointer;
+    }
+
+    .forecast {
+        width: 100%;
+        height: 553px;
+        overflow-y: scroll;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .forecast::-webkit-scrollbar {
+        display: none;
+    }
+
+    header {
+        margin-top: 0px;
+    }
+
+    #header, #main {
+        display: none;
+    }
+
+    @media(max-width: 576px) {
+        html {
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    @media(min-width: 576px) {
+        html {
+            overflow: hidden;
+        }
+    }
+
+    /*Spinner*/
+    .loader,
+    .loader:before,
+    .loader:after {
+        border-radius: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+        -webkit-animation: load7 1.8s infinite ease-in-out;
+        animation: load7 1.8s infinite ease-in-out;
+    }
+
+    .loader {
+        color: #9c4dca;
+        font-size: 10px;
+        margin: 80px auto;
+        position: relative;
+        text-indent: -9999em;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+    .loader:before,
+    .loader:after {
+        content: '';
+        position: absolute;
+        top: 0;
+    }
+
+    .loader:before {
+        left: -3.5em;
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    .loader:after {
+        left: 3.5em;
+    }
+
+    @-webkit-keyframes load7 {
+
+        0%,
+        80%,
+        100% {
+            box-shadow: 0 2.5em 0 -1.3em;
+        }
+
+        40% {
+            box-shadow: 0 2.5em 0 0;
+        }
+    }
+
+    @keyframes load7 {
+
+        0%,
+        80%,
+        100% {
+            box-shadow: 0 2.5em 0 -1.3em;
+        }
+
+        40% {
+            box-shadow: 0 2.5em 0 0;
+        }
+    }
+</style>

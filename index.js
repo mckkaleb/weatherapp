@@ -30,15 +30,15 @@ function updatePage(json) {
         .then(data => document.getElementById("location").innerHTML = "Current Conditions for " + data.features[0].properties.address.city + ", " +  data.features[0].properties.address.state);
 
     if (json.current.weather[0].main == "Clouds") {
-        document.getElementById("background-image").src = '/images/cloudy.jpg';
+        document.getElementById("background-image").src = './images/cloudy.jpg';
     } else if (json.current.weather[0].main == "Rain") {
-        document.getElementById("background-image").src = '/images/rainy.jpg';
+        document.getElementById("background-image").src = './images/rainy.jpg';
     } else if (json.current.weather[0].main == "Drizzle") {
-        document.getElementById("background-image").src = '/images/drizzle.jpg';
+        document.getElementById("background-image").src = './images/drizzle.jpg';
     } else if (json.current.weather[0].main == "Snow") {
-        document.getElementById("background-image").src = '/images/snowy.jpg';
+        document.getElementById("background-image").src = './images/snowy.jpg';
     } else if (json.current.weather[0].main == "Thunderstorm") {
-        document.getElementById("background-image").src = '/images/thunderstorm.jpg';
+        document.getElementById("background-image").src = './images/thunderstorm.jpg';
     }                 
     
     document.getElementById("current-temp").innerHTML = Math.round(json.current.temp) + "°";
